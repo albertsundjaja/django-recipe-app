@@ -12,6 +12,14 @@ docker-compose run app sh -c "python manage.py test && flake8"
 docker-compose run app sh -c "python manage.py startapp user"
 ```
 
+### after creating new model
+
+do model migrations
+
+```
+docker-compose run app sh -c "python manage.py makemigrations"
+```
+
 ## to run the server
 
 ```

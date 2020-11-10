@@ -32,4 +32,7 @@ class UserAdmin(BaseUserAdmin):
     )
 
 
+# this will enable the models to be modified
+# in the admin page
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Tag)
