@@ -24,7 +24,8 @@ class CommandsTestCase(TestCase):
 
         with patch('django.db.utils.ConnectionHandler.__getitem__') as gi:
             # here we are providing the return value differently after 6 times
-            # this works like a generator function, the first 5 is an OperationalError while the 6th one returns true
+            # this works like a generator function,
+            # the first 5 is an OperationalError while the 6th one returns true
             # side effect allows us to raise exception as well as return value
             gi.side_effect = [OperationalError] * 5 + [True]
             call_command('wait_for_db')

@@ -20,7 +20,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         """Update a user, setting the password correctly and return it"""
-        # pop will retrieve and remove the password property from validated_data
+        # pop will retrieve and remove the password property
+        # from validated_data
         # since we want to update password with hash not with raw password
         # and giving NONE default value if it's not defined in the property
         password = validated_data.pop('password', None)
