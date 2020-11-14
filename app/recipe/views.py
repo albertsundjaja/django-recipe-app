@@ -1,4 +1,6 @@
-from rest_framework import viewsets, mixins
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
@@ -98,11 +100,51 @@ class RecipeViewSet(viewsets.ModelViewSet):
             list is getting all the recipes
             e.g. /api/recipe/recipes
         """
+        # action is the name of the function
+        # that gets called by the endpoint
+        # this one is the default from mixin
         if self.action == 'retrieve':
             return serializers.RecipeDetailSerializer
+        # our custom action upload_image (see below)
+        elif self.action == "upload_image":
+            return serializers.RecipeImageSerializer
 
         return self.serializer_class
 
     def perform_create(self, serializer):
         """Create a new recipe"""
         serializer.save(user=self.request.user)
+
+    # the action decorator is to add custom endpoint
+    # detail=True means we can only do this for the detail url
+    # url_path is the path appended at end
+    # i.e. /api/recipe/recipes/1/upload-image
+    # (since detail=True, we can only upload image to existing recipe)
+    @action(methods=['POST'], detail=True, url_path='upload-image')
+    # pk is primary key that get passed in to the view
+    def upload_image(self, request, pk=None):
+        """Upload an image to a recipe"""
+        # will get the object based on the id in the url
+        recipe = self.get_object()
+        # self.get_serializer will call the
+        # get_serializer_class method (see above)
+        # we use this self.get_serializer instead of specifying
+        # the RecipeImageSerializer directly because
+        # 1. it is best practice
+        # 2. we get the built in function to upload in browseable api
+        serializer = self.get_serializer(
+            recipe,
+            data=request.data
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK
+            )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )

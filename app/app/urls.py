@@ -15,10 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # include the path from our user urls
     path('api/user/', include('user.urls')),
     path('api/recipe/', include('recipe.urls')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# append the media url.
+# by default django will server static files, hence we dont neeed
+# to add path to serve static
+# however we need to add the media path to be able to serve media
